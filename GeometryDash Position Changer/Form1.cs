@@ -85,44 +85,23 @@ namespace GeometryDash_Position_Changer
 
                 if (Process.GetProcessesByName("GeometryDash").Length > 0)
                 {
-                    try
-                    {
-                        swed = new Swed("GeometryDash");
-                        baseModule = swed.GetModuleBase(".exe");
-                        cuiLabel3.Content = "GD Detected";
-                        cuiLabel3.ForeColor = System.Drawing.Color.Green;
-                        isGameDetected = true;
-                    }
-                    catch
-                    {
-                        isGameDetected = false;
-                    }
-
+                    swed = new Swed("GeometryDash");
+                    baseModule = swed.GetModuleBase(".exe");
+                    cuiLabel3.Content = "GD Detected";
+                    cuiLabel3.ForeColor = System.Drawing.Color.Green;
+                    isGameDetected = true;
                 }
 
-                if (isGameDetected)
-                {
-                    IntPtr Xof1 = swed.ReadPointer(baseModule, xOffset1);
-                    IntPtr Xof2 = swed.ReadPointer(Xof1, xOffset2);
-                    xPointer = swed.ReadPointer(Xof2, xOffset3);
+                IntPtr Xof1 = swed.ReadPointer(baseModule, xOffset1);
+                IntPtr Xof2 = swed.ReadPointer(Xof1, xOffset2);
+                xPointer = swed.ReadPointer(Xof2, xOffset3);
 
-                    IntPtr Yof1 = swed.ReadPointer(baseModule, yOffset1);
-                    IntPtr Yof2 = swed.ReadPointer(Yof1, yOffset2);
-                    yPointer = swed.ReadPointer(Yof2, yOffset3);
+                IntPtr Yof1 = swed.ReadPointer(baseModule, yOffset1);
+                IntPtr Yof2 = swed.ReadPointer(Yof1, yOffset2);
+                yPointer = swed.ReadPointer(Yof2, yOffset3);
 
-                    cuiLabel1.Content = GetX().ToString();
-                    cuiLabel2.Content = GetY().ToString();
-                }
-                else
-                {
-                    cuiLabel3.Content = "GD Not Detected";
-                    cuiLabel3.ForeColor = System.Drawing.Color.Crimson;
-                    cuiLabel1.Content = "??";
-                    cuiLabel2.Content = "??";
-                    baseModule = IntPtr.Zero;
-                    xPointer = IntPtr.Zero;
-                    yPointer = IntPtr.Zero;
-                }
+                cuiLabel1.Content = GetX().ToString();
+                cuiLabel2.Content = GetY().ToString();
             }
             catch
             {

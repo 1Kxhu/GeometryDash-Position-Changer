@@ -80,18 +80,37 @@ namespace GeometryDash_Position_Changer
 
         private void Timer_Tick(object sender, EventArgs e)
         {
+            isGameDetected = false;
             try
             {
-                swed = new Swed("GeometryDash");
-                baseModule = swed.GetModuleBase(".exe");
-                cuiLabel3.Content = "GD Detected";
-                cuiLabel3.ForeColor = System.Drawing.Color.Green;
-                isGameDetected = true;
+                if (Process.GetProcessesByName("GeometryDash").Length > 0)
+                {
+                    swed = new Swed("GeometryDash");
+                    baseModule = swed.GetModuleBase(".exe");
+                    cuiLabel3.Content = "GD Detected";
+                    cuiLabel3.ForeColor = System.Drawing.Color.Green;
+                    isGameDetected = true;
+                }
+                else
+                {
+                    cuiLabel3.Content = "GD Not Detected";
+                    cuiLabel3.ForeColor = System.Drawing.Color.Crimson;
+                    cuiLabel1.Content = "??";
+                    cuiLabel2.Content = "??";
+                    baseModule = IntPtr.Zero;
+                    xPointer = IntPtr.Zero;
+                    yPointer = IntPtr.Zero;
+                }
             }
             catch
             {
                 cuiLabel3.Content = "GD Not Detected";
                 cuiLabel3.ForeColor = System.Drawing.Color.Crimson;
+                cuiLabel1.Content = "??";
+                cuiLabel2.Content = "??";
+                baseModule = IntPtr.Zero;
+                xPointer = IntPtr.Zero;
+                yPointer = IntPtr.Zero;
                 isGameDetected = false;
             }
 
@@ -107,6 +126,17 @@ namespace GeometryDash_Position_Changer
 
                 cuiLabel1.Content = GetX().ToString();
                 cuiLabel2.Content = GetY().ToString();
+            }
+            else
+            {
+                cuiLabel3.Content = "GD Not Detected";
+                cuiLabel3.ForeColor = System.Drawing.Color.Crimson;
+                cuiLabel1.Content = "??";
+                cuiLabel2.Content = "??";
+                baseModule = IntPtr.Zero;
+                xPointer = IntPtr.Zero;
+                yPointer = IntPtr.Zero;
+                isGameDetected = false;
             }
         }
 

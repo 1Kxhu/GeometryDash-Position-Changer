@@ -62,16 +62,24 @@ namespace Swed32
 
         public Process SetProcess(string procName)
         {
-            Process[] processes = Process.GetProcessesByName(procName);
-            if (processes.Length > 0)
+            try
             {
-                proc = processes[0];
+
+                Process[] processes = Process.GetProcessesByName(procName);
+                if (processes.Length > 0)
+                {
+                    proc = processes[0];
+                }
+                else
+                {
+                    throw new InvalidOperationException("Process was not found, are you using the correct bit version and have no misspellings?");
+                }
+                return proc;
             }
-            else
+            catch
             {
-                throw new InvalidOperationException("Process was not found, are you using the correct bit version and have no misspellings?");
+                return null;
             }
-            return proc;
         }
 
         public IntPtr GetModuleBase(string moduleName)
@@ -165,28 +173,56 @@ namespace Swed32
 
         public float ReadFloat(IntPtr address)
         {
-            byte[] buffer = new byte[4];
-            ReadProcessMemory(proc.Handle, address, buffer, buffer.Length, IntPtr.Zero);
-            return BitConverter.ToSingle(buffer, 0);
+            try
+            {
+                byte[] buffer = new byte[4];
+                ReadProcessMemory(proc.Handle, address, buffer, buffer.Length, IntPtr.Zero);
+                return BitConverter.ToSingle(buffer, 0);
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
         public float ReadFloat(IntPtr address, int offset)
         {
-            byte[] buffer = new byte[4];
-            ReadProcessMemory(proc.Handle, address + offset, buffer, buffer.Length, IntPtr.Zero);
-            return BitConverter.ToSingle(buffer, 0);
+            try
+            {
+                byte[] buffer = new byte[4];
+                ReadProcessMemory(proc.Handle, address + offset, buffer, buffer.Length, IntPtr.Zero);
+                return BitConverter.ToSingle(buffer, 0);
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
         public bool WriteFloat(IntPtr address, float value)
         {
-            byte[] bytes = BitConverter.GetBytes(value);
-            return WriteProcessMemory(proc.Handle, address, bytes, bytes.Length, IntPtr.Zero);
+            try
+            {
+                byte[] bytes = BitConverter.GetBytes(value);
+                return WriteProcessMemory(proc.Handle, address, bytes, bytes.Length, IntPtr.Zero);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool WriteFloat(IntPtr address, int offset, float value)
         {
-            byte[] bytes = BitConverter.GetBytes(value);
-            return WriteProcessMemory(proc.Handle, address + offset, bytes, bytes.Length, IntPtr.Zero);
+            try
+            {
+                byte[] bytes = BitConverter.GetBytes(value);
+                return WriteProcessMemory(proc.Handle, address + offset, bytes, bytes.Length, IntPtr.Zero);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
 

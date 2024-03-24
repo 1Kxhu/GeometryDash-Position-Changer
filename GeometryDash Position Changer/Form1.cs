@@ -82,7 +82,6 @@ namespace GeometryDash_Position_Changer
         {
             try
             {
-
                 if (Process.GetProcessesByName("GeometryDash").Length > 0)
                 {
                     swed = new Swed("GeometryDash");

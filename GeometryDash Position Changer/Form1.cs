@@ -58,10 +58,16 @@ namespace GeometryDash_Position_Changer
         {
             try
             {
+                if (targetObject is string targetString)
+                {
+                    targetString = targetString.Replace('.',',');
+                    return Convert.ToSingle(targetString);
+                }
                 return Convert.ToSingle(targetObject);
             }
             catch
             {
+                MessageBox.Show("Wrong value entered!");
                 return 0;
             }
         }

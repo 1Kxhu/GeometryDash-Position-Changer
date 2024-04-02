@@ -60,7 +60,7 @@ namespace GeometryDash_Position_Changer
             {
                 if (targetObject is string targetString)
                 {
-                    targetString = targetString.Replace('.',',');
+                    targetString = targetString.Replace('.', ',');
                     return Convert.ToSingle(targetString);
                 }
                 return Convert.ToSingle(targetObject);
@@ -105,8 +105,23 @@ namespace GeometryDash_Position_Changer
                 IntPtr Yof2 = swed.ReadPointer(Yof1, yOffset2);
                 yPointer = swed.ReadPointer(Yof2, yOffset3);
 
-                cuiLabel1.Content = GetX().ToString();
-                cuiLabel2.Content = GetY().ToString();
+                if (xPointer == IntPtr.Zero)
+                {
+                    cuiLabel1.Content = "??";
+                }
+                else
+                {
+                    cuiLabel1.Content = GetX().ToString();
+                }
+
+                if (yPointer == IntPtr.Zero)
+                {
+                    cuiLabel2.Content = "??";
+                }
+                else
+                {
+                    cuiLabel2.Content = GetY().ToString();
+                }
             }
             catch
             {
@@ -141,6 +156,63 @@ namespace GeometryDash_Position_Changer
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("https://github.com/1Kxhu/GeometryDash-Position-Changer");
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (cuiLabel1.Content.Contains("?") == false && cuiLabel2.Content.Contains("?") == false)
+            {
+                string tempItem = cuiLabel1.Content + "|" + cuiLabel2.Content;
+                listBox1.Items.Add(tempItem);
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (ListBoxCheck() && isGameDetected)
+            {
+                string item = listBox1.SelectedItem.ToString();
+                string[] positions = item.Split('|');
+
+                try
+                {
+                    float posX = float.Parse(positions[0]);
+                    float posY = float.Parse(positions[1]);
+
+                    SetX(posX);
+                    SetY(posY);
+                }
+                catch
+                {
+                    return;
+                }
+            }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if (ListBoxCheck())
+            {
+                listBox1.Items.Remove(listBox1.SelectedItem);
+            }
+        }
+
+        private bool ListBoxCheck()
+        {
+            bool temp = listBox1.SelectedItems.Count > 0 && listBox1.SelectedItem != null;
+            if (temp == false)
+            {
+                MessageBox.Show("No item selected or the selected item is null.");
+            }
+            return temp;
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to clear the list?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                listBox1.Items.Clear();
+            }
         }
     }
 }

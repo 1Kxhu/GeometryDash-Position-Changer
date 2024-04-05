@@ -67,34 +67,49 @@ namespace GeometryDash_Position_Changer
             }
         }
 
-        float ParseFloat(object targetObject)
+        bool ParseFloat(object targetObject, ref float number)
         {
             try
             {
                 if (targetObject is string targetString)
                 {
                     targetString = targetString.Replace('.', ',');
-                    return Convert.ToSingle(targetString);
+
+                    number = Convert.ToSingle(targetString);
+                    return true;
                 }
-                return Convert.ToSingle(targetObject);
+                number = number = Convert.ToSingle(targetObject);
+                return true;
             }
             catch
             {
-                MessageBox.Show("Wrong value entered!");
-                return 0;
+                MessageBox.Show("Please enter a number. \nBoth periods and commas are supported as decimal places.", "Bad value entered!");
+                return false;
             }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             if (isGameDetected)
-                SetX(ParseFloat(textBox1.Text));
+            {
+                float target = GetX();
+                if (ParseFloat(textBox1.Text, ref target))
+                {
+                    SetX(target);
+                }
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             if (isGameDetected)
-                SetY(ParseFloat(textBox2.Text));
+            {
+                float target = GetY();
+                if (ParseFloat(textBox2.Text, ref target))
+                {
+                    SetY(target);
+                }
+            }
         }
 
         private void saveResIcon(bool changed)
@@ -296,6 +311,13 @@ namespace GeometryDash_Position_Changer
         private void Form1_Load(object sender, EventArgs e)
         {
             listBox1.Items.Clear();
+            saveResIcon(true);
+            saveResIcon(false);
+        }
+
+        private void cuiSwitch1_Click(object sender, EventArgs e)
+        {
+            TopMost = !cuiSwitch1.Checked;
         }
     }
 }

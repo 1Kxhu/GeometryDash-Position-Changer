@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\gdposSwitcherON.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CuoreUI">
       <HintPath>..\..\wfcl1\wfcl1\bin\Release\CuoreUI.dll</HintPath>
@@ -87,10 +90,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\green.ico" />
+    <None Include="Resources\gdposSwitcherON.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\red.ico" />
+    <None Include="Resources\gdposSwitcherOFF.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

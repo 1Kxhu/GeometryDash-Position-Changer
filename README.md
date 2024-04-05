@@ -1,2 +1,2 @@
 # Screenshot
-![image](https://github.com/1Kxhu/GeometryDash-Position-Changer/assets/115172127/f9af94bf-5cc9-4847-831d-d8fbf1733333)
+![image](https://github.com/1Kxhu/GeometryDash-Position-Changer/assets/115172127/ba6d342b-051e-43ce-87c6-e4d1d4b29bd5)

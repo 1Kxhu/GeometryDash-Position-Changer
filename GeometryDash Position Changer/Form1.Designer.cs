@@ -281,6 +281,7 @@ namespace GeometryDash_Position_Changer
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form1";
             this.Text = "Geometry Dash Position Changer | itzkxhu";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

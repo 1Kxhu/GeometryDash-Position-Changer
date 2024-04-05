@@ -292,5 +292,10 @@ namespace GeometryDash_Position_Changer
                 listBox1.Items.Clear();
             }
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            listBox1.Items.Clear();
+        }
     }
 }

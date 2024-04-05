@@ -1,6 +1,8 @@
-﻿using Swed32;
+﻿using GeometryDash_Position_Changer.Properties;
+using Swed32;
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace GeometryDash_Position_Changer
@@ -29,9 +31,14 @@ namespace GeometryDash_Position_Changer
             InitializeComponent();
 
             Timer timer = new Timer();
-            timer.Interval = 4;
+            timer.Interval = 200;
             timer.Tick += Timer_Tick;
             timer.Start();
+
+            Timer pointersTimer = new Timer();
+            pointersTimer.Interval = 10;
+            pointersTimer.Tick += pointersTimer_Tick;
+            pointersTimer.Start();
         }
 
         float GetX()
@@ -41,7 +48,10 @@ namespace GeometryDash_Position_Changer
 
         void SetX(float value)
         {
-            swed.WriteFloat(xPointer, xOffset4, value);
+            if (swed.WriteFloat(xPointer, xOffset4, value) == false)
+            {
+                MessageBox.Show("Failed to write X position. The game may have updated or your software is outdated.");
+            }
         }
 
         float GetY()
@@ -51,7 +61,10 @@ namespace GeometryDash_Position_Changer
 
         void SetY(float value)
         {
-            swed.WriteFloat(yPointer, yOffset4, value);
+            if (swed.WriteFloat(yPointer, yOffset4, value) == false)
+            {
+                MessageBox.Show("Failed to write Y position. The game may have updated or your software is outdated.");
+            }
         }
 
         float ParseFloat(object targetObject)
@@ -84,6 +97,28 @@ namespace GeometryDash_Position_Changer
                 SetY(ParseFloat(textBox2.Text));
         }
 
+        private void saveResIcon(bool changed)
+        {
+            if (isGameDetected != changed)
+            {
+                isGameDetected = changed;
+                if (isGameDetected)
+                {
+                    cuiLabel3.Content = "GD Detected";
+                    Icon = Resources.green;
+                    cuiLabel3.ForeColor = Color.FromArgb(0, 225, 70);
+                    isGameDetected = true;
+                }
+                else
+                {
+                    isGameDetected = false;
+                    cuiLabel3.Content = "GD Not Detected";
+                    Icon = Resources.red;
+                    cuiLabel3.ForeColor = Color.Crimson;
+                }
+            }
+        }
+
         private void Timer_Tick(object sender, EventArgs e)
         {
             try
@@ -92,11 +127,24 @@ namespace GeometryDash_Position_Changer
                 {
                     swed = new Swed("GeometryDash");
                     baseModule = swed.GetModuleBase(".exe");
-                    cuiLabel3.Content = "GD Detected";
-                    cuiLabel3.ForeColor = System.Drawing.Color.Green;
-                    isGameDetected = true;
+                    saveResIcon(true);
                 }
+            }
+            catch
+            {
+                saveResIcon(false);
+                cuiLabel1.Content = "??";
+                cuiLabel2.Content = "??";
+                baseModule = IntPtr.Zero;
+                xPointer = IntPtr.Zero;
+                yPointer = IntPtr.Zero;
+            }
+        }
 
+        private void pointersTimer_Tick(object sender, EventArgs e)
+        {
+            try
+            {
                 IntPtr Xof1 = swed.ReadPointer(baseModule, xOffset1);
                 IntPtr Xof2 = swed.ReadPointer(Xof1, xOffset2);
                 xPointer = swed.ReadPointer(Xof2, xOffset3);
@@ -125,9 +173,7 @@ namespace GeometryDash_Position_Changer
             }
             catch
             {
-                isGameDetected = false;
-                cuiLabel3.Content = "GD Not Detected";
-                cuiLabel3.ForeColor = System.Drawing.Color.Crimson;
+                saveResIcon(false);
                 cuiLabel1.Content = "??";
                 cuiLabel2.Content = "??";
                 baseModule = IntPtr.Zero;
@@ -135,6 +181,8 @@ namespace GeometryDash_Position_Changer
                 yPointer = IntPtr.Zero;
             }
         }
+
+
 
         private void button3_Click(object sender, EventArgs e)
         {
@@ -162,7 +210,7 @@ namespace GeometryDash_Position_Changer
         {
             if (cuiLabel1.Content.Contains("?") == false && cuiLabel2.Content.Contains("?") == false)
             {
-                string tempItem = cuiLabel1.Content + "|" + cuiLabel2.Content;
+                string tempItem = cuiLabel1.Content + " " + cuiLabel2.Content;
                 listBox1.Items.Add(tempItem);
             }
         }
@@ -172,18 +220,48 @@ namespace GeometryDash_Position_Changer
             if (ListBoxCheck() && isGameDetected)
             {
                 string item = listBox1.SelectedItem.ToString();
-                string[] positions = item.Split('|');
+                string[] positions = item.Split(' ');
+
+                float posX = 0;
+                float posY = 0;
+
+                bool xDetected = false;
+                bool yDetected = false;
 
                 try
                 {
-                    float posX = float.Parse(positions[0]);
-                    float posY = float.Parse(positions[1]);
+                    posX = float.Parse(positions[0]);
+                    xDetected = true;
+                    posY = float.Parse(positions[1]);
+                    yDetected = true;
 
                     SetX(posX);
                     SetY(posY);
                 }
                 catch
                 {
+                    string message = string.Empty;
+                    if (xDetected)
+                    {
+                        message += $"\nThe x position was detected: x = {posX}";
+                    }
+                    else
+                    {
+                        message += $"\nThe x position detection failed.";
+                    }
+
+                    if (yDetected)
+                    {
+                        message += $"\nThe y position was detected: y = {posY}";
+                    }
+                    else
+                    {
+                        message += $"\nThe y position detection failed.";
+                    }
+
+                    message += "\n\nPlease remember the correct format is \"x y\", where a space is present inbetween the numbers.";
+
+                    MessageBox.Show($"Name: \"{item}\". \n\nMore info: {message}", "Faulty item detected!");
                     return;
                 }
             }

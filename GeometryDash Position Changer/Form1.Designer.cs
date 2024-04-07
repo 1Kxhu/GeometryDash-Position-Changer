@@ -30,11 +30,16 @@ namespace GeometryDash_Position_Changer
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.linkLabel2 = new System.Windows.Forms.LinkLabel();
+            this.cuiButton6 = new CuoreUI.Controls.cuiButton();
+            this.cuiButton5 = new CuoreUI.Controls.cuiButton();
+            this.cuiLabel4 = new wfcl1.cuiLabel();
+            this.cuiSwitch1 = new CuoreUI.Controls.cuiSwitch();
             this.cuiButton4 = new CuoreUI.Controls.cuiButton();
             this.cuiButton3 = new CuoreUI.Controls.cuiButton();
             this.cuiButton2 = new CuoreUI.Controls.cuiButton();
@@ -45,22 +50,19 @@ namespace GeometryDash_Position_Changer
             this.button2 = new CuoreUI.Controls.cuiButton();
             this.button1 = new CuoreUI.Controls.cuiButton();
             this.cuiLabel3 = new wfcl1.cuiLabel();
-            this.cuiSwitch1 = new CuoreUI.Controls.cuiSwitch();
-            this.cuiLabel4 = new wfcl1.cuiLabel();
-            this.cuiButton5 = new CuoreUI.Controls.cuiButton();
-            this.cuiButton6 = new CuoreUI.Controls.cuiButton();
+            this.cuiFormDrag1 = new CuoreUI.cuiFormDrag(this.components);
             this.SuspendLayout();
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(15, 519);
+            this.textBox1.Location = new System.Drawing.Point(12, 524);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(237, 20);
             this.textBox1.TabIndex = 2;
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(270, 519);
+            this.textBox2.Location = new System.Drawing.Point(267, 524);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(237, 20);
             this.textBox2.TabIndex = 3;
@@ -70,7 +72,7 @@ namespace GeometryDash_Position_Changer
             this.linkLabel1.AutoSize = true;
             this.linkLabel1.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.linkLabel1.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
-            this.linkLabel1.Location = new System.Drawing.Point(14, 6);
+            this.linkLabel1.Location = new System.Drawing.Point(11, 11);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(72, 16);
             this.linkLabel1.TabIndex = 10;
@@ -83,13 +85,67 @@ namespace GeometryDash_Position_Changer
             this.linkLabel2.AutoSize = true;
             this.linkLabel2.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.linkLabel2.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
-            this.linkLabel2.Location = new System.Drawing.Point(92, 6);
+            this.linkLabel2.Location = new System.Drawing.Point(89, 11);
             this.linkLabel2.Name = "linkLabel2";
             this.linkLabel2.Size = new System.Drawing.Size(73, 16);
             this.linkLabel2.TabIndex = 11;
             this.linkLabel2.TabStop = true;
             this.linkLabel2.Text = "Github Repo";
             this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
+            // 
+            // cuiButton6
+            // 
+            this.cuiButton6.Content = "↗";
+            this.cuiButton6.Font = new System.Drawing.Font("Microsoft YaHei UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.cuiButton6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
+            this.cuiButton6.HoverBackground = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
+            this.cuiButton6.ImeMode = System.Windows.Forms.ImeMode.Off;
+            this.cuiButton6.Location = new System.Drawing.Point(267, 550);
+            this.cuiButton6.Name = "cuiButton6";
+            this.cuiButton6.NormalBackground = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
+            this.cuiButton6.PressedBackground = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
+            this.cuiButton6.Rounding = 6;
+            this.cuiButton6.Size = new System.Drawing.Size(29, 28);
+            this.cuiButton6.TabIndex = 25;
+            this.cuiButton6.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // cuiButton5
+            // 
+            this.cuiButton5.Content = "↗";
+            this.cuiButton5.Font = new System.Drawing.Font("Microsoft YaHei UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.cuiButton5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
+            this.cuiButton5.HoverBackground = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
+            this.cuiButton5.ImeMode = System.Windows.Forms.ImeMode.Off;
+            this.cuiButton5.Location = new System.Drawing.Point(12, 550);
+            this.cuiButton5.Name = "cuiButton5";
+            this.cuiButton5.NormalBackground = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
+            this.cuiButton5.PressedBackground = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
+            this.cuiButton5.Rounding = 6;
+            this.cuiButton5.Size = new System.Drawing.Size(29, 28);
+            this.cuiButton5.TabIndex = 24;
+            this.cuiButton5.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // cuiLabel4
+            // 
+            this.cuiLabel4.Content = "Always\\ On-Top";
+            this.cuiLabel4.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.cuiLabel4.HorizontalAlignment = wfcl1.cuiLabel.HorizontalAlignments.Left;
+            this.cuiLabel4.Location = new System.Drawing.Point(59, 31);
+            this.cuiLabel4.Name = "cuiLabel4";
+            this.cuiLabel4.Size = new System.Drawing.Size(111, 19);
+            this.cuiLabel4.TabIndex = 23;
+            // 
+            // cuiSwitch1
+            // 
+            this.cuiSwitch1.Background = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
+            this.cuiSwitch1.Checked = false;
+            this.cuiSwitch1.CheckedForeground = System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(43)))), ((int)(((byte)(43)))));
+            this.cuiSwitch1.Location = new System.Drawing.Point(12, 31);
+            this.cuiSwitch1.Name = "cuiSwitch1";
+            this.cuiSwitch1.Size = new System.Drawing.Size(41, 19);
+            this.cuiSwitch1.TabIndex = 22;
+            this.cuiSwitch1.UncheckedForeground = System.Drawing.Color.DarkGray;
+            this.cuiSwitch1.Click += new System.EventHandler(this.cuiSwitch1_Click);
             // 
             // cuiButton4
             // 
@@ -98,7 +154,7 @@ namespace GeometryDash_Position_Changer
             this.cuiButton4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
             this.cuiButton4.HoverBackground = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
             this.cuiButton4.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.cuiButton4.Location = new System.Drawing.Point(15, 413);
+            this.cuiButton4.Location = new System.Drawing.Point(12, 418);
             this.cuiButton4.Name = "cuiButton4";
             this.cuiButton4.NormalBackground = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
             this.cuiButton4.PressedBackground = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
@@ -114,7 +170,7 @@ namespace GeometryDash_Position_Changer
             this.cuiButton3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
             this.cuiButton3.HoverBackground = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
             this.cuiButton3.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.cuiButton3.Location = new System.Drawing.Point(15, 307);
+            this.cuiButton3.Location = new System.Drawing.Point(12, 312);
             this.cuiButton3.Name = "cuiButton3";
             this.cuiButton3.NormalBackground = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
             this.cuiButton3.PressedBackground = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
@@ -130,7 +186,7 @@ namespace GeometryDash_Position_Changer
             this.cuiButton2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
             this.cuiButton2.HoverBackground = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
             this.cuiButton2.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.cuiButton2.Location = new System.Drawing.Point(15, 259);
+            this.cuiButton2.Location = new System.Drawing.Point(12, 264);
             this.cuiButton2.Name = "cuiButton2";
             this.cuiButton2.NormalBackground = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
             this.cuiButton2.PressedBackground = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
@@ -146,7 +202,7 @@ namespace GeometryDash_Position_Changer
             this.cuiButton1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
             this.cuiButton1.HoverBackground = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
             this.cuiButton1.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.cuiButton1.Location = new System.Drawing.Point(15, 365);
+            this.cuiButton1.Location = new System.Drawing.Point(12, 370);
             this.cuiButton1.Name = "cuiButton1";
             this.cuiButton1.NormalBackground = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
             this.cuiButton1.PressedBackground = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
@@ -170,7 +226,7 @@ namespace GeometryDash_Position_Changer
             this.listBox1.Items.AddRange(new object[] {
             "34"});
             this.listBox1.ItemSelectedBackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(43)))), ((int)(((byte)(43)))));
-            this.listBox1.Location = new System.Drawing.Point(15, 49);
+            this.listBox1.Location = new System.Drawing.Point(12, 54);
             this.listBox1.Name = "listBox1";
             this.listBox1.Rounding = 8;
             this.listBox1.SelectedForegroundColor = System.Drawing.Color.LightGray;
@@ -182,7 +238,7 @@ namespace GeometryDash_Position_Changer
             this.cuiLabel2.Content = "Your\\ text\\ here!";
             this.cuiLabel2.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.cuiLabel2.HorizontalAlignment = wfcl1.cuiLabel.HorizontalAlignments.Left;
-            this.cuiLabel2.Location = new System.Drawing.Point(303, 551);
+            this.cuiLabel2.Location = new System.Drawing.Point(300, 556);
             this.cuiLabel2.Name = "cuiLabel2";
             this.cuiLabel2.Size = new System.Drawing.Size(202, 21);
             this.cuiLabel2.TabIndex = 8;
@@ -192,7 +248,7 @@ namespace GeometryDash_Position_Changer
             this.cuiLabel1.Content = "Your\\ text\\ here!";
             this.cuiLabel1.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.cuiLabel1.HorizontalAlignment = wfcl1.cuiLabel.HorizontalAlignments.Left;
-            this.cuiLabel1.Location = new System.Drawing.Point(48, 551);
+            this.cuiLabel1.Location = new System.Drawing.Point(45, 556);
             this.cuiLabel1.Name = "cuiLabel1";
             this.cuiLabel1.Size = new System.Drawing.Size(202, 21);
             this.cuiLabel1.TabIndex = 4;
@@ -204,7 +260,7 @@ namespace GeometryDash_Position_Changer
             this.button2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
             this.button2.HoverBackground = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
             this.button2.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.button2.Location = new System.Drawing.Point(270, 471);
+            this.button2.Location = new System.Drawing.Point(267, 476);
             this.button2.Name = "button2";
             this.button2.NormalBackground = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
             this.button2.PressedBackground = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
@@ -220,7 +276,7 @@ namespace GeometryDash_Position_Changer
             this.button1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
             this.button1.HoverBackground = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
             this.button1.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.button1.Location = new System.Drawing.Point(15, 471);
+            this.button1.Location = new System.Drawing.Point(12, 476);
             this.button1.Name = "button1";
             this.button1.NormalBackground = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
             this.button1.PressedBackground = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
@@ -234,70 +290,21 @@ namespace GeometryDash_Position_Changer
             this.cuiLabel3.Content = "Loading";
             this.cuiLabel3.Font = new System.Drawing.Font("Microsoft YaHei UI", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.cuiLabel3.HorizontalAlignment = wfcl1.cuiLabel.HorizontalAlignments.Right;
-            this.cuiLabel3.Location = new System.Drawing.Point(155, 7);
+            this.cuiLabel3.Location = new System.Drawing.Point(168, 12);
             this.cuiLabel3.Name = "cuiLabel3";
-            this.cuiLabel3.Size = new System.Drawing.Size(352, 35);
+            this.cuiLabel3.Size = new System.Drawing.Size(336, 35);
             this.cuiLabel3.TabIndex = 9;
             // 
-            // cuiSwitch1
+            // cuiFormDrag1
             // 
-            this.cuiSwitch1.Background = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
-            this.cuiSwitch1.Checked = false;
-            this.cuiSwitch1.CheckedForeground = System.Drawing.Color.FromArgb(((int)(((byte)(43)))), ((int)(((byte)(43)))), ((int)(((byte)(43)))));
-            this.cuiSwitch1.Location = new System.Drawing.Point(15, 26);
-            this.cuiSwitch1.Name = "cuiSwitch1";
-            this.cuiSwitch1.Size = new System.Drawing.Size(41, 19);
-            this.cuiSwitch1.TabIndex = 22;
-            this.cuiSwitch1.UncheckedForeground = System.Drawing.Color.DarkGray;
-            this.cuiSwitch1.Click += new System.EventHandler(this.cuiSwitch1_Click);
-            // 
-            // cuiLabel4
-            // 
-            this.cuiLabel4.Content = "Always\\ On-Top";
-            this.cuiLabel4.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.cuiLabel4.HorizontalAlignment = wfcl1.cuiLabel.HorizontalAlignments.Left;
-            this.cuiLabel4.Location = new System.Drawing.Point(62, 26);
-            this.cuiLabel4.Name = "cuiLabel4";
-            this.cuiLabel4.Size = new System.Drawing.Size(111, 19);
-            this.cuiLabel4.TabIndex = 23;
-            // 
-            // cuiButton5
-            // 
-            this.cuiButton5.Content = "↗";
-            this.cuiButton5.Font = new System.Drawing.Font("Microsoft YaHei UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.cuiButton5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
-            this.cuiButton5.HoverBackground = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
-            this.cuiButton5.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.cuiButton5.Location = new System.Drawing.Point(15, 545);
-            this.cuiButton5.Name = "cuiButton5";
-            this.cuiButton5.NormalBackground = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
-            this.cuiButton5.PressedBackground = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
-            this.cuiButton5.Rounding = 6;
-            this.cuiButton5.Size = new System.Drawing.Size(29, 28);
-            this.cuiButton5.TabIndex = 24;
-            this.cuiButton5.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // cuiButton6
-            // 
-            this.cuiButton6.Content = "↗";
-            this.cuiButton6.Font = new System.Drawing.Font("Microsoft YaHei UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.cuiButton6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(34)))), ((int)(((byte)(34)))));
-            this.cuiButton6.HoverBackground = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
-            this.cuiButton6.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.cuiButton6.Location = new System.Drawing.Point(270, 545);
-            this.cuiButton6.Name = "cuiButton6";
-            this.cuiButton6.NormalBackground = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
-            this.cuiButton6.PressedBackground = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))), ((int)(((byte)(222)))));
-            this.cuiButton6.Rounding = 6;
-            this.cuiButton6.Size = new System.Drawing.Size(29, 28);
-            this.cuiButton6.TabIndex = 25;
-            this.cuiButton6.Click += new System.EventHandler(this.button4_Click);
+            this.cuiFormDrag1.DragFrequency = 4;
+            this.cuiFormDrag1.TargetForm = this;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(516, 588);
+            this.ClientSize = new System.Drawing.Size(516, 591);
             this.Controls.Add(this.cuiButton6);
             this.Controls.Add(this.cuiButton5);
             this.Controls.Add(this.cuiLabel4);
@@ -347,6 +354,7 @@ namespace GeometryDash_Position_Changer
         private wfcl1.cuiLabel cuiLabel4;
         private cuiButton cuiButton5;
         private cuiButton cuiButton6;
+        private CuoreUI.cuiFormDrag cuiFormDrag1;
     }
 }
 

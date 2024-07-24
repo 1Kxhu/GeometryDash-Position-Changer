@@ -1,25 +1,26 @@
 ﻿using GeometryDash_Position_Changer.Properties;
-using Swed32;
+using swed64;
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Reflection.Emit;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GeometryDash_Position_Changer
 {
     public partial class Form1 : Form
     {
-        int xOffset1 = 0x004F0330;
-        int xOffset2 = 0x1A0;
-        int xOffset3 = 0x878;
-        int xOffset4 = 0x854;
+        const int xOffset1 = 0x00687E10;
+        const int xOffset2 = 0x208;
+        const int xOffset3 = 0xD98;
+        const int xOffset4 = 0xA90;
 
-        int yOffset1 = 0x004F0330;
-        int yOffset2 = 0x198;
-        int yOffset3 = 0x878;
-        int yOffset4 = 0x858;
+        // yOffsets were removed because only xOffset4 would be different and only by 4 bytes
+        // instead, only xPointer is calculated
+        // yPointer is just the "xPointer + sizeof(float)", where the size of float is also 4 bytes
+        // (because the values are next to eachother in the game's memory)
 
-        Swed swed;
         IntPtr baseModule;
         IntPtr xPointer;
         IntPtr yPointer;
@@ -29,6 +30,7 @@ namespace GeometryDash_Position_Changer
         public Form1()
         {
             InitializeComponent();
+            Opacity = 0;
 
             Timer timer = new Timer();
             timer.Interval = 200;
@@ -39,16 +41,27 @@ namespace GeometryDash_Position_Changer
             pointersTimer.Interval = 10;
             pointersTimer.Tick += pointersTimer_Tick;
             pointersTimer.Start();
+
+            Task.Run(async () =>
+            {
+                await Task.Delay(200);
+                Invoke(new Action(() =>
+                {
+
+                    Opacity = 1;
+
+                }));
+            });
         }
 
         float GetX()
         {
-            return swed.ReadFloat(xPointer, xOffset4);
+            return swed.ReadFloat(xPointer);
         }
 
         void SetX(float value)
         {
-            if (swed.WriteFloat(xPointer, xOffset4, value) == false)
+            if (swed.WriteFloat(xPointer, value) == false)
             {
                 MessageBox.Show("Failed to write X position. The game may have updated or your software is outdated.");
             }
@@ -56,12 +69,12 @@ namespace GeometryDash_Position_Changer
 
         float GetY()
         {
-            return swed.ReadFloat(yPointer, yOffset4);
+            return swed.ReadFloat(yPointer);
         }
 
         void SetY(float value)
         {
-            if (swed.WriteFloat(yPointer, yOffset4, value) == false)
+            if (swed.WriteFloat(yPointer, value) == false)
             {
                 MessageBox.Show("Failed to write Y position. The game may have updated or your software is outdated.");
             }
@@ -138,10 +151,11 @@ namespace GeometryDash_Position_Changer
         {
             try
             {
+
                 if (Process.GetProcessesByName("GeometryDash").Length > 0)
                 {
-                    swed = new Swed("GeometryDash");
-                    baseModule = swed.GetModuleBase(".exe");
+                    swed.proc = Process.GetProcessesByName("GeometryDash")[0];
+                    baseModule = swed.proc.MainModule.BaseAddress;
                     saveResIcon(true);
                 }
             }
@@ -154,23 +168,20 @@ namespace GeometryDash_Position_Changer
                 xPointer = IntPtr.Zero;
                 yPointer = IntPtr.Zero;
             }
+            Opacity = 1;
         }
 
         private void pointersTimer_Tick(object sender, EventArgs e)
         {
             try
             {
-                IntPtr Xof1 = swed.ReadPointer(baseModule, xOffset1);
-                IntPtr Xof2 = swed.ReadPointer(Xof1, xOffset2);
-                xPointer = swed.ReadPointer(Xof2, xOffset3);
+                xPointer = swed.ReadPointer(baseModule, xOffset1, 2, new int[] { xOffset2, xOffset3, xOffset4 });
 
-                IntPtr Yof1 = swed.ReadPointer(baseModule, yOffset1);
-                IntPtr Yof2 = swed.ReadPointer(Yof1, yOffset2);
-                yPointer = swed.ReadPointer(Yof2, yOffset3);
+                yPointer = xPointer + sizeof(float);
 
                 if (xPointer == IntPtr.Zero)
                 {
-                    cuiLabel1.Content = "??";
+                    cuiLabel1.Content = "??z";
                 }
                 else
                 {
@@ -179,7 +190,7 @@ namespace GeometryDash_Position_Changer
 
                 if (yPointer == IntPtr.Zero)
                 {
-                    cuiLabel2.Content = "??";
+                    cuiLabel2.Content = "??z";
                 }
                 else
                 {
@@ -189,8 +200,8 @@ namespace GeometryDash_Position_Changer
             catch
             {
                 saveResIcon(false);
-                cuiLabel1.Content = "??";
-                cuiLabel2.Content = "??";
+                cuiLabel1.Content = "??f";
+                cuiLabel2.Content = "??f";
                 baseModule = IntPtr.Zero;
                 xPointer = IntPtr.Zero;
                 yPointer = IntPtr.Zero;

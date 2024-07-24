@@ -1,112 +1,84 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Text;
 
-namespace Swed32
+
+
+
+namespace swed64
 {
-    public class Swed
+    public class swed
     {
+
         #region imports
 
         [DllImport("Kernel32.dll")]
+
         static extern bool ReadProcessMemory(
-            IntPtr hProcess,
-            IntPtr lpBaseAddress,
-            [Out] byte[] lpBuffer,
-            int nSize,
-            IntPtr lpNumberOfBytesRead
-        );
+           IntPtr hProcess,
+           IntPtr lpBaseAddress,
+           [Out] byte[] lpBuffer,
+           int nSize,
+           IntPtr lpNumberOfBytesRead
+           );
 
         [DllImport("kernel32.dll")]
+
         static extern bool WriteProcessMemory(
             IntPtr hProcess,
             IntPtr lpBaseAddress,
             byte[] lpBuffer,
             int size,
             IntPtr lpNumberOfBytesWritten
-        );
+            );
 
-        [DllImport("kernel32.dll")]
-        static extern IntPtr CreateFile(
-            string lpFileName,
-            uint dwDesiredAccess,
-            uint dwShareMode,
-            IntPtr lpSecurityAttributes,
-            uint dwCreationDisposition,
-            uint dwFlagsAndAttributes,
-            IntPtr hTemplateFile
-        );
 
-        [DllImport("kernel32.dll")]
-        static extern bool CloseHandle(IntPtr hObject);
+
 
         #endregion
+
 
         #region globals
 
-        private Process proc;
+
+        public static Process proc;
+
 
         #endregion
 
-        public Swed(string procName)
-        {
-            proc = SetProcess(procName);
-        }
 
-        public Process GetProcess()
+        public Process GetProcess(string procname)
         {
+            proc = Process.GetProcessesByName(procname)[0];
             return proc;
         }
 
-        public Process SetProcess(string procName)
+        public IntPtr GetModuleBase(string modulename)
         {
-            try
+            if (string.IsNullOrEmpty(modulename))
             {
-
-                Process[] processes = Process.GetProcessesByName(procName);
-                if (processes.Length > 0)
-                {
-                    proc = processes[0];
-                }
-                else
-                {
-                    throw new InvalidOperationException("Process was not found, are you using the correct bit version and have no misspellings?");
-                }
-                return proc;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        public IntPtr GetModuleBase(string moduleName)
-        {
-            if (string.IsNullOrEmpty(moduleName))
-            {
-                throw new InvalidOperationException("moduleName was either null or empty.");
+                return IntPtr.Zero;
             }
 
             if (proc == null)
             {
-                throw new InvalidOperationException("process is invalid, check your init.");
+                return IntPtr.Zero;
             }
 
             try
             {
-                if (moduleName.Contains(".exe"))
+                if (modulename.Contains(".exe"))
                 {
-                    if (proc.MainModule != null)
-                    {
-                        return proc.MainModule.BaseAddress;
-                    }
+                    return proc.MainModule.BaseAddress;
                 }
 
                 foreach (ProcessModule module in proc.Modules)
                 {
-                    if (module.ModuleName == moduleName)
+                    if (module.ModuleName == modulename)
                     {
                         return module.BaseAddress;
                     }
@@ -114,164 +86,377 @@ namespace Swed32
             }
             catch (Exception)
             {
-                throw new InvalidOperationException("Failed to find the specified module, search string might have misspellings.");
+                return IntPtr.Zero;
             }
 
             return IntPtr.Zero;
         }
 
-        public IntPtr ReadPointer(IntPtr addy)
+
+        // Main methods 
+        public static IntPtr ReadPointer(IntPtr addy)
         {
-            byte[] buffer = new byte[4];
+            byte[] buffer = new byte[8];
             ReadProcessMemory(proc.Handle, addy, buffer, buffer.Length, IntPtr.Zero);
-            return (IntPtr)BitConverter.ToInt32(buffer, 0);
+            return (IntPtr)BitConverter.ToInt64(buffer, 0);
         }
-
-        public IntPtr ReadPointer(IntPtr addy, int offset)
+        public static IntPtr ReadPointer(IntPtr addy, int offset)
         {
-            byte[] buffer = new byte[4];
-            ReadProcessMemory(proc.Handle, addy + offset, buffer, buffer.Length, IntPtr.Zero);
-            return (IntPtr)BitConverter.ToInt32(buffer, 0);
+            byte[] buffer = new byte[8];
+            ReadProcessMemory(proc.Handle, IntPtr.Add(addy, offset), buffer, buffer.Length, IntPtr.Zero);
+            return (IntPtr)BitConverter.ToInt64(buffer, 0);
         }
 
-        // Add other ReadPointer overloads as needed
+        public static IntPtr ReadPointer(IntPtr addy, int firstoffset, params int[] otherOffsets)
+        {
+            IntPtr rah = ReadPointer(addy + firstoffset);
+            foreach (int i in otherOffsets)
+            {
+                rah = rah + i;
+            }
+            return rah;
+        }
 
-        // Implement ReadInt, ReadFloat, ReadShort, ReadUShort, ReadUInt methods similarly
+        public static IntPtr ReadPointer(IntPtr addy, int firstoffset, int rogueBytesCount, params int[] otherOffsets)
+        {
+            IntPtr OGPointer = ReadPointer(addy + firstoffset);
+            int countOffset = 0;
+            for (int i = 0; i < rogueBytesCount; i++)
+            {
+                OGPointer = ReadPointer(OGPointer, otherOffsets[i]);
+                countOffset++;
+            }
+            foreach (int i in otherOffsets)
+            {
+                if (countOffset > 0)
+                {
+                    countOffset--;
+                    continue;
+                }
+                OGPointer = OGPointer + i;
+            }
+            return OGPointer;
+        }
 
-        // Implement Write methods similarly
-
-        public byte[] ReadBytes(IntPtr addy, int bytes)
+        public static byte[] ReadBytes(IntPtr addy, int bytes)
         {
             byte[] buffer = new byte[bytes];
             ReadProcessMemory(proc.Handle, addy, buffer, buffer.Length, IntPtr.Zero);
             return buffer;
         }
 
-        // Implement other ReadBytes overloads as needed
-
-        // Implement ReadVec, ReadMatrix, WriteVec, Nop methods similarly
-
-        public IntPtr ScanForBytes32(string moduleName, string needle)
+        public byte[] ReadBytes(IntPtr addy, int offset, int bytes)
         {
-            ProcessModule module = proc.Modules.OfType<ProcessModule>().FirstOrDefault(x => x.ModuleName == moduleName) ?? throw new InvalidOperationException("Module was not found. Check your module name.");
-
-            byte[] needleBytes = needle.Split(' ').Select(b => Convert.ToByte(b, 16)).ToArray();
-            byte[] haystackBytes;
-
-            if (module.FileName == null)
-            {
-                throw new InvalidOperationException("Module filename was null.");
-            }
-
-            using (var stream = new FileStream(module.FileName, FileMode.Open, FileAccess.Read))
-            {
-                haystackBytes = new byte[stream.Length];
-                stream.Read(haystackBytes, 0, (int)stream.Length);
-            }
-            return (IntPtr)ScanForBytes32(haystackBytes, needleBytes);
+            byte[] buffer = new byte[bytes];
+            ReadProcessMemory(proc.Handle, addy + offset, buffer, buffer.Length, IntPtr.Zero);
+            return buffer;
         }
 
-        public float ReadFloat(IntPtr address)
+        public static bool WriteBytes(IntPtr address, byte[] newbytes)
         {
-            try
-            {
-                byte[] buffer = new byte[4];
-                ReadProcessMemory(proc.Handle, address, buffer, buffer.Length, IntPtr.Zero);
-                return BitConverter.ToSingle(buffer, 0);
-            }
-            catch
-            {
-                return 0;
-            }
+            return WriteProcessMemory(proc.Handle, address, newbytes, newbytes.Length, IntPtr.Zero);
+        }
+        public bool WriteBytes(IntPtr address, int offset, byte[] newbytes)
+        {
+            return WriteProcessMemory(proc.Handle, address + offset, newbytes, newbytes.Length, IntPtr.Zero);
         }
 
+        // different return types 
+        public int ReadInt(IntPtr address)
+        {
+            return BitConverter.ToInt32(ReadBytes(address, 4), 0);
+        }
+        public int ReadInt(IntPtr address, int offset)
+        {
+            return BitConverter.ToInt32(ReadBytes(address + offset, 4), 0);
+        }
+
+        public IntPtr ReadLong(IntPtr address)
+        {
+            return (IntPtr)BitConverter.ToInt64(ReadBytes(address, 8), 0);
+        }
+        public IntPtr ReadLong(IntPtr address, int offset)
+        {
+            return (IntPtr)BitConverter.ToInt64(ReadBytes(address + offset, 8), 0);
+        }
+
+        public static float ReadFloat(IntPtr address)
+        {
+            return BitConverter.ToSingle(ReadBytes(address, 4), 0);
+        }
         public float ReadFloat(IntPtr address, int offset)
         {
-            try
-            {
-                byte[] buffer = new byte[4];
-                ReadProcessMemory(proc.Handle, address + offset, buffer, buffer.Length, IntPtr.Zero);
-                return BitConverter.ToSingle(buffer, 0);
-            }
-            catch
-            {
-                return 0;
-            }
+            return BitConverter.ToSingle(ReadBytes(address + offset, 4), 0);
         }
 
-        public bool WriteFloat(IntPtr address, float value)
+        public double ReadDouble(IntPtr address)
         {
-            try
-            {
-                byte[] bytes = BitConverter.GetBytes(value);
-                return WriteProcessMemory(proc.Handle, address, bytes, bytes.Length, IntPtr.Zero);
-            }
-            catch
-            {
-                return false;
-            }
+            return BitConverter.ToDouble(ReadBytes(address, 8), 0);
         }
-
-        public bool WriteFloat(IntPtr address, int offset, float value)
+        public double ReadDouble(IntPtr address, int offset)
         {
-            try
-            {
-                byte[] bytes = BitConverter.GetBytes(value);
-                return WriteProcessMemory(proc.Handle, address + offset, bytes, bytes.Length, IntPtr.Zero);
-            }
-            catch
-            {
-                return false;
-            }
+            return BitConverter.ToDouble(ReadBytes(address + offset, 4), 0);
         }
 
 
-        public int ScanForBytes32(byte[] haystack, byte[] needle)
+
+
+        public Vector3 ReadVec(IntPtr address)
         {
-            for (int i = 0; i < haystack.Length - needle.Length; i++)
+            var bytes = ReadBytes(address, 12);
+            return new Vector3
             {
-                bool found = true;
-                for (int j = 0; j < needle.Length; j++)
-                {
-                    if (haystack[i + j] != needle[j])
-                    {
-                        found = false;
-                        break;
-                    }
-                }
-                if (found)
-                {
-                    return i;
-                }
-            }
-            return -1;
+                X = BitConverter.ToSingle(bytes, 0),
+                Y = BitConverter.ToSingle(bytes, 4),
+                Z = BitConverter.ToSingle(bytes, 8)
+            };
         }
+
+        public Vector3 ReadVec(IntPtr address, int offset)
+        {
+            var bytes = ReadBytes(address + offset, 12);
+            return new Vector3
+            {
+                X = BitConverter.ToSingle(bytes, 0),
+                Y = BitConverter.ToSingle(bytes, 4),
+                Z = BitConverter.ToSingle(bytes, 8)
+            };
+        }
+
+        public short ReadShort(IntPtr address)
+        {
+            return BitConverter.ToInt16(ReadBytes(address, 2), 0);
+        }
+
+        public short ReadShort(IntPtr address, int offset)
+        {
+            return BitConverter.ToInt16(ReadBytes(address + offset, 2), 0);
+        }
+
+        public ushort ReadUShort(IntPtr address)
+        {
+            return BitConverter.ToUInt16(ReadBytes(address, 2), 0);
+        }
+
+        public ushort ReadUShort(IntPtr address, int offset)
+        {
+            return BitConverter.ToUInt16(ReadBytes(address + offset, 2), 0);
+        }
+
+        public uint ReadUInt(IntPtr address)
+        {
+            return BitConverter.ToUInt32(ReadBytes(address, 4), 0);
+        }
+
+        public uint ReadUInt(IntPtr address, int offset)
+        {
+            return BitConverter.ToUInt32(ReadBytes(address + offset, 4), 0);
+        }
+
+
+        public ulong ReadULong(IntPtr address)
+        {
+            return BitConverter.ToUInt64(ReadBytes(address, 8), 0);
+        }
+
+        public ulong ReadULong(IntPtr address, int offset)
+        {
+            return BitConverter.ToUInt64(ReadBytes(address + offset, 8), 0);
+        }
+
+        public bool ReadBool(IntPtr address)
+        {
+            return BitConverter.ToBoolean(ReadBytes(address, 1), 0);
+        }
+
+        public bool ReadBool(IntPtr address, int offset)
+        {
+            return BitConverter.ToBoolean(ReadBytes(address + offset, 1), 0);
+        }
+
+        public string ReadString(IntPtr address, int length)
+        {
+            return Encoding.UTF8.GetString(ReadBytes(address, length));
+        }
+
+        public string ReadString(IntPtr address, int offset, int length)
+        {
+            return Encoding.UTF8.GetString(ReadBytes(address + offset, length));
+        }
+
+        public char ReadChar(IntPtr address)
+        {
+            return BitConverter.ToChar(ReadBytes(address, 2), 0);
+        }
+
+        public char ReadChar(IntPtr address, int offset)
+        {
+            return BitConverter.ToChar(ReadBytes(address + offset, 2), 0);
+        }
+
+        public float[] ReadMatrix(IntPtr address)
+        {
+            var bytes = ReadBytes(address, 4 * 16);
+            var matrix = new float[bytes.Length];
+
+            matrix[0] = BitConverter.ToSingle(bytes, 0 * 4);
+            matrix[1] = BitConverter.ToSingle(bytes, 1 * 4);
+            matrix[2] = BitConverter.ToSingle(bytes, 2 * 4);
+            matrix[3] = BitConverter.ToSingle(bytes, 3 * 4);
+
+            matrix[4] = BitConverter.ToSingle(bytes, 4 * 4);
+            matrix[5] = BitConverter.ToSingle(bytes, 5 * 4);
+            matrix[6] = BitConverter.ToSingle(bytes, 6 * 4);
+            matrix[7] = BitConverter.ToSingle(bytes, 7 * 4);
+
+            matrix[8] = BitConverter.ToSingle(bytes, 8 * 4);
+            matrix[9] = BitConverter.ToSingle(bytes, 9 * 4);
+            matrix[10] = BitConverter.ToSingle(bytes, 10 * 4);
+            matrix[11] = BitConverter.ToSingle(bytes, 11 * 4);
+
+            matrix[12] = BitConverter.ToSingle(bytes, 12 * 4);
+            matrix[13] = BitConverter.ToSingle(bytes, 13 * 4);
+            matrix[14] = BitConverter.ToSingle(bytes, 14 * 4);
+            matrix[15] = BitConverter.ToSingle(bytes, 15 * 4);
+
+            return matrix;
+
+        }
+
+
+        // write methods 
 
         public bool WriteInt(IntPtr address, int value)
         {
-            byte[] bytes = BitConverter.GetBytes(value);
-            return WriteProcessMemory(proc.Handle, address, bytes, bytes.Length, IntPtr.Zero);
+            return WriteBytes(address, BitConverter.GetBytes(value));
         }
 
         public bool WriteInt(IntPtr address, int offset, int value)
         {
-            byte[] bytes = BitConverter.GetBytes(value);
-            return WriteProcessMemory(proc.Handle, address + offset, bytes, bytes.Length, IntPtr.Zero);
+            return WriteBytes(address + offset, BitConverter.GetBytes(value));
         }
 
-        public int ReadInt(IntPtr address)
+        public bool WriteShort(IntPtr address, short value)
         {
-            byte[] buffer = new byte[4];
-            ReadProcessMemory(proc.Handle, address, buffer, buffer.Length, IntPtr.Zero);
-            return BitConverter.ToInt32(buffer, 0);
+            return WriteBytes(address, BitConverter.GetBytes(value));
         }
 
-        public int ReadInt(IntPtr address, int offset)
+        public bool WriteShort(IntPtr address, int offset, short value)
         {
-            byte[] buffer = new byte[4];
-            ReadProcessMemory(proc.Handle, address + offset, buffer, buffer.Length, IntPtr.Zero);
-            return BitConverter.ToInt32(buffer, 0);
+            return WriteBytes(address + offset, BitConverter.GetBytes(value));
         }
 
+        public bool WriteUShort(IntPtr address, ushort value)
+        {
+            return WriteBytes(address, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteUShort(IntPtr address, int offset, ushort value)
+        {
+            return WriteBytes(address + offset, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteUInt(IntPtr address, uint value)
+        {
+            return WriteBytes(address, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteUInt(IntPtr address, int offset, uint value)
+        {
+            return WriteBytes(address + offset, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteLong(IntPtr address, long value)
+        {
+            return WriteBytes(address, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteLong(IntPtr address, int offset, long value)
+        {
+            return WriteBytes(address + offset, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteULong(IntPtr address, ulong value)
+        {
+            return WriteBytes(address, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteULong(IntPtr address, int offset, ulong value)
+        {
+            return WriteBytes(address + offset, BitConverter.GetBytes(value));
+        }
+
+        public static bool WriteFloat(IntPtr address, float value)
+        {
+            return WriteBytes(address, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteFloat(IntPtr address, int offset, float value)
+        {
+            return WriteBytes(address + offset, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteDouble(IntPtr address, double value)
+        {
+            return WriteBytes(address, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteDouble(IntPtr address, int offset, double value)
+        {
+            return WriteBytes(address + offset, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteBool(IntPtr address, bool value)
+        {
+            return WriteBytes(address, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteBool(IntPtr address, int offset, bool value)
+        {
+            return WriteBytes(address + offset, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteBool(string module, int firstOffset, int[] offsets, bool value)
+        {
+            IntPtr targetModule = GetModuleBase(module);
+
+            IntPtr targetAddress = ReadPointer(targetModule, firstOffset, offsets);
+
+            return WriteBytes(targetAddress, BitConverter.GetBytes(value));
+        }
+
+        public bool WriteString(IntPtr address, string value)
+        {
+            return WriteBytes(address, Encoding.UTF8.GetBytes(value));
+        }
+
+        public bool WriteVec(IntPtr address, Vector3 value)
+        {
+            byte[] bytes = new byte[12];
+            byte[] xBytes = BitConverter.GetBytes(value.X);
+            byte[] yBytes = BitConverter.GetBytes(value.Y);
+            byte[] zBytes = BitConverter.GetBytes(value.Z);
+            xBytes.CopyTo(bytes, 0);
+            yBytes.CopyTo(bytes, 4);
+            zBytes.CopyTo(bytes, 8);
+            return WriteBytes(address, bytes);
+        }
+
+        public bool WriteVec(IntPtr address, int offset, Vector3 value)
+        {
+            byte[] bytes = new byte[12];
+            byte[] xBytes = BitConverter.GetBytes(value.X);
+            byte[] yBytes = BitConverter.GetBytes(value.Y);
+            byte[] zBytes = BitConverter.GetBytes(value.Z);
+            xBytes.CopyTo(bytes, 0);
+            yBytes.CopyTo(bytes, 4);
+            zBytes.CopyTo(bytes, 8);
+            return WriteBytes(address + offset, bytes);
+        }
+
+        public class Vector3
+        {
+            public float X, Y, Z;
+        }
     }
 }

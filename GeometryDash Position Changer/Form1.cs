@@ -11,7 +11,7 @@ namespace GeometryDash_Position_Changer
 {
     public partial class Form1 : Form
     {
-        const int xOffset1 = 0x00687E10;
+        const int xOffset1 = 0x006A4E68;
         const int xOffset2 = 0x208;
         const int xOffset3 = 0xD98;
         const int xOffset4 = 0xA90;
